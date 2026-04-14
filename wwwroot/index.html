@@ -1,14 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            color: white;
+        }
+        .container-box {
+            background: white;
+            color: black;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 50px;
+            box-shadow: 0px 5px 20px rgba(0,0,0,0.3);
+        }
+        h2 { text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="container-box">
+        <h2>👨‍💼 Employee Manager</h2>
+        <div class="text-center mb-3">
+            <button class="btn btn-primary" onclick="loadEmployees()">Load Employees</button>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <input type="text" id="name" class="form-control" placeholder="Name">
+            </div>
+            <div class="col">
+                <input type="text" id="dept" class="form-control" placeholder="Department">
+            </div>
+            <div class="col">
+                <input type="number" id="salary" class="form-control" placeholder="Salary">
+            </div>
+            <div class="col">
+                <button class="btn btn-success w-100" onclick="addEmployee()">Add</button>
+            </div>
+        </div>
+        <table class="table table-striped table-hover text-center" id="table">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Salary</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
 <script>
+const baseUrl = "https://employeeapi-production-d695.up.railway.app/api/Employee";
 
-    const baseUrl = "https://employeeapi-production-d695.up.railway.app/api/Employee";
-
-    function loadEmployees() {
-        fetch(baseUrl)
-            .then(res => res.json())
-            .then(data => {
-                let rows = "";
-                data.forEach(emp => {
-                    rows += `
+function loadEmployees() {
+    fetch(baseUrl)
+    .then(res => res.json())
+    .then(data => {
+        let rows = "";
+        data.forEach(emp => {
+            rows += `
             <tr>
                 <td>${emp.id}</td>
                 <td>${emp.name}</td>
@@ -18,40 +75,32 @@
                     <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>
                 </td>
             </tr>`;
-                });
-                document.querySelector("#table tbody").innerHTML = rows;
-            })
-            .catch(err => console.error("Error:", err));
-    }
+        });
+        document.querySelector("#table tbody").innerHTML = rows;
+    })
+    .catch(err => alert("Error loading data"));
+}
 
-    function addEmployee() {
-        const emp = {
-            name: document.getElementById("name").value,
-            department: document.getElementById("dept").value,
-            salary: parseFloat(document.getElementById("salary").value)
-        };
+function addEmployee() {
+    const emp = {
+        name: document.getElementById("name").value,
+        department: document.getElementById("dept").value,
+        salary: parseFloat(document.getElementById("salary").value)
+    };
+    fetch(baseUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(emp)
+    })
+    .then(() => loadEmployees())
+    .catch(err => alert("Error adding employee"));
+}
 
-        fetch(baseUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(emp)
-        })
-            .then(() => {
-                loadEmployees();
-            })
-            .catch(err => console.error("Error:", err));
-    }
-
-    function deleteEmployee(id) {
-        fetch(baseUrl + "/" + id, {
-            method: "DELETE"
-        })
-            .then(() => {
-                loadEmployees();
-            })
-            .catch(err => console.error("Error:", err));
-    }
-
+function deleteEmployee(id) {
+    fetch(baseUrl + "/" + id, { method: "DELETE" })
+    .then(() => loadEmployees())
+    .catch(err => alert("Error deleting employee"));
+}
 </script>
+</body>
+</html>
