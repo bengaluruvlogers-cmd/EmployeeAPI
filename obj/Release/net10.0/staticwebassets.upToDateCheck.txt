@@ -1,2 +1,0 @@
-wwwroot\index.html
-C:\Users\darshan\OneDrive\Desktop\c# project\EmployeeAPI\EmployeeAPI\wwwroot\index.html
