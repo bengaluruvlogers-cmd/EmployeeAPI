@@ -1,0 +1,58 @@
+<script>
+
+    // ✅ FIXED BASE URL (IMPORTANT)
+    const baseUrl = "/api/employee";
+
+    function loadEmployees() {
+        fetch(baseUrl)
+            .then(res => res.json())
+            .then(data => {
+                let rows = "";
+                data.forEach(emp => {
+                    rows += `
+            <tr>
+                <td>${emp.id}</td>
+                <td>${emp.name}</td>
+                <td>${emp.department}</td>
+                <td>${emp.salary}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>
+                </td>
+            </tr>`;
+                });
+                document.querySelector("#table tbody").innerHTML = rows;
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
+    function addEmployee() {
+        const emp = {
+            name: document.getElementById("name").value,
+            department: document.getElementById("dept").value,
+            salary: parseFloat(document.getElementById("salary").value)
+        };
+
+        fetch(baseUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(emp)
+        })
+            .then(() => {
+                loadEmployees();
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
+    function deleteEmployee(id) {
+        fetch(baseUrl + "/" + id, {
+            method: "DELETE"
+        })
+            .then(() => {
+                loadEmployees();
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
+</script>
